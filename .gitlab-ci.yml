@@ -1,0 +1,46 @@
+# Definición de stages
+stages:
+  - build
+  - test
+
+# Trabajo para construir el proyecto
+build:
+  stage: build
+  image: node:20.14.0
+  variables:
+    CI: "true"
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-build
+    paths:
+      - node_modules/
+      - .next/cache/
+  before_script:
+    - npm ci --quiet --no-optional --no-progress
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - .next
+    expire_in: 1 week
+
+# Trabajo para ejecutar las pruebas
+test:
+  stage: test
+  image: node:20.14.0
+  variables:
+    CI: "true"
+  dependencies:
+    - build
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-test
+    paths:
+      - node_modules/
+  before_script:
+    - npm ci --quiet --no-optional --no-progress
+  script:
+    - npm test
+
+# Configuración opcional:
+# Puedes agregar más configuraciones como notificaciones, despliegues, etc.
+# Por ejemplo, notificar por correo electrónico cuando las pruebas fallan o tener despliegues automáticos
+# en entornos de desarrollo, pruebas o producción según los resultados de las pruebas.
