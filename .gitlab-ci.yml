@@ -39,6 +39,12 @@ test:
     - npm ci --quiet --no-optional --no-progress
   script:
     - npm test
+  artifacts:
+    when: always
+    paths:
+      - test-results/*.xml
+    reports:
+      junit: test-results/*.xml
 
 # Configuración opcional:
 # Puedes agregar más configuraciones como notificaciones, despliegues, etc.
